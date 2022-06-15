@@ -1,0 +1,64 @@
+groups:
+  - name: AllInstances
+    rules:
+    - alert: InstanceDown
+      # Condition for alerting
+      expr: up == 0
+      for: 1m
+      # Annotation - additional informational labels to store more information
+      annotations:
+        title: 'Instance {{ $labels.instance }} down'
+        description: '{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minute.'
+      # Labels - additional labels to be attached to the alert
+      labels:
+        severity: 'critical'
+  - name: Adapter Rules
+    rules:
+    - alert: Too Many 4xx Errors - Adapter Responses
+      expr: >-
+        sum by(app_name) (rate(http_requests_total{namespace="adapters",status_code=~"^4.."}[15m])) / sum by(app_name) (rate(http_requests_total{namespace="adapters"}[15m])) * 100 > 10
+      labels:
+        severity: warning
+      annotations:
+        summary: Adapter {{ $labels.app_name }} is returning too many 4xx errors
+        description: This alert fires if 10% of the adapter http responses over the past 15 minutes have a status 4xx.
+    - alert: Too Many 4xx Errors - Provider Responses
+      expr: >-
+        sum by(app_name) (rate(http_requests_total{namespace="adapters",provider_status_code=~"^4..",type="dataProviderHit"}[15m])) / sum by(app_name) (rate(http_requests_total{namespace="adapters",type="dataProviderHit"}[15m])) * 100 > 10
+      labels:
+        severity: warning
+      annotations:
+        summary: Adapter {{ $labels.app_name }} providers are returning too many 4xx errors
+        description: This alert fires if 10% of the requests against adapter providers over the past 15 minutes have a status 4xx.
+    - alert: Too Many 5xx Errors - Adapter Responses
+      expr: >-
+        sum by(app_name) (rate(http_requests_total{namespace="adapters",status_code=~"^5.."}[15m])) / sum by(app_name) (rate(http_requests_total{namespace="adapters"}[15m])) * 100 > 20
+      labels:
+        severity: warning
+      annotations:
+        summary: Adapter {{ $labels.app_name }} is returning too many 5xx errors
+        description: This alert fires if 20% of the adapter http responses over the past 15 minutes have a status 5xx.
+    - alert: Too Many 5xx Errors - Provider Responses
+      expr: >-
+        sum by(app_name) (rate(http_requests_total{namespace="adapters",provider_status_code=~"^5..",type="dataProviderHit"}[15m])) / sum by(app_name) (rate(http_requests_total{namespace="adapters",type="dataProviderHit"}[15m])) * 100 > 10
+      labels:
+        severity: warning
+      annotations:
+        summary: Adapter {{ $labels.app_name }} providers are returning too many 5xx errors
+        description: This alert fires if 10% of the requests against adapter providers over the past 15 minutes have a status 5xx.
+    - alert: Slow Responses
+      expr: >-
+        sum by (app_name) (rate(http_request_duration_seconds_sum{namespace="adapters"}[10m])/rate(http_request_duration_seconds_count{namespace="adapters"}[10m]) > 20)
+      labels:
+        severity: warning
+      annotations:
+        summary: Adapter {{ $labels.app_name }} is responding slowly
+        description: This alert fires if over the last 10 minutes any single request took more than 20% of the total duration of all requests.
+    - alert: Server rate limiting requests
+      expr: >-
+        sum by (app_name) (rate(http_requests_rate_limit{namespace="adapters"}[10m]) > 0)
+      labels:
+        severity: warning
+      annotations:
+        summary: Adapter {{ $labels.app_name }} is receiving a high volume of requests
+        description: This alert fires if over the last 10 minutes there were requests blocked by the Express Server's rate limiting middleware. This is controlled by the environment variable SERVER_RATE_LIMIT_MAX.

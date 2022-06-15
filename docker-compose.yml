@@ -1,0 +1,67 @@
+version: '3.9'
+services:
+  coingecko-adapter:
+      image: public.ecr.aws/chainlink/adapters/coingecko-adapter:1.6.8
+      ports:
+        - '8080:8080'
+      environment:
+      - EXPERIMENTAL_METRICS_ENABLED=True
+      - API_KEY=${COINGECKO_API_KEY}
+      networks:
+        - prometheus-network
+  coinmarketcap-adapter:
+      image: public.ecr.aws/chainlink/adapters/coinmarketcap-adapter:1.4.0
+      ports:
+        - '8081:8080'
+      environment:
+      - EXPERIMENTAL_METRICS_ENABLED=True
+      - API_KEY=${COINMARKETCAP_API_KEY}
+      - METRICS_NAME=COINMARKETCAP
+      networks:
+        - prometheus-network
+  tiingo-adapter:
+      image: public.ecr.aws/chainlink/adapters/tiingo-adapter:1.10.10
+      ports:
+        - '8082:8080'
+      environment:
+      - EXPERIMENTAL_METRICS_ENABLED=True
+      - API_KEY=${TIINGO_API_KEY}
+      - METRICS_NAME=TIINGO
+      - WS_ENABLED=true
+      - LOG_LEVEL=debug
+      networks:
+        - prometheus-network
+  grafana:
+      container_name: grafana
+      image: grafana/grafana
+      ports:
+        - '3000:3000'
+      networks:
+        - prometheus-network
+  prometheus:
+      container_name: prometheus-server
+      image: prom/prometheus
+      ports:
+        - '9090:9090'
+      volumes:
+        - ./prometheus.yml:/etc/prometheus/prometheus.yml
+        - ./rules.yml:/etc/prometheus/rules.yml
+      command:
+        - '--config.file=/etc/prometheus/prometheus.yml'
+      networks:
+        - prometheus-network
+  alertmanager:
+      container_name: alertmanager
+      image: quay.io/prometheus/alertmanager
+      ports:
+        - '9093:9093'
+      volumes:
+        - ./alertmanager/alertmanager.yml:/etc/alertmanager.yml
+      command:
+        - '--config.file=/etc/alertmanager.yml'
+      networks:
+        - prometheus-network
+networks:
+  prometheus-network:
+    name: prometheus-network
+    driver: bridge

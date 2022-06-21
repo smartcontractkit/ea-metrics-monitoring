@@ -33,7 +33,7 @@ services:
         - prometheus-network
   grafana:
       container_name: grafana
-      image: grafana/grafana
+      image: grafana/grafana-enterprise:9.0.1
       ports:
         - '3000:3000'
       networks:

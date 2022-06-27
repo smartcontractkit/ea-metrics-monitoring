@@ -228,7 +228,7 @@
                 "expr": "rate(http_requests_total{namespace=\"$namespace\",app_name=~\"$adapter.*\"}[$__rate_interval]) * 60 ",
                 "format": "time_series",
                 "intervalFactor": 2,
-                "legendFormat": "{{service}} {{feed_id}} {{status_code}} {{type}} CacheWarmer:{{is_cache_warming}}",
+                "legendFormat": "{{app_name}} {{feed_id}} {{status_code}} {{type}} CacheWarmer:{{is_cache_warming}}",
                 "refId": "A"
              }
           ],
@@ -313,7 +313,7 @@
                 "expr": "rate(http_request_duration_seconds_sum{namespace=\"$namespace\",app_name=~\"$adapter.*\"}[$__rate_interval])/rate(http_request_duration_seconds_count{namespace=\"$namespace\",app_name=~\"$adapter.*\"}[$__rate_interval])",
                 "format": "time_series",
                 "intervalFactor": 2,
-                "legendFormat": "{{service}}",
+                "legendFormat": "{{app_name}}",
                 "refId": "A"
              }
           ],
@@ -1055,7 +1055,7 @@
                 "expr": "ws_connection_active{namespace=\"$namespace\",app_name=~\"$adapter.*\"}",
                 "format": "time_series",
                 "intervalFactor": 2,
-                "legendFormat": "{{service}} | Key:{{key}}",
+                "legendFormat": "{{app_name}} | Key:{{key}}",
                 "refId": "A"
              }
           ],
@@ -1140,7 +1140,7 @@
                 "expr": "ws_connection_errors{namespace=\"$namespace\",app_name=~\"$adapter.*\"}",
                 "format": "time_series",
                 "intervalFactor": 2,
-                "legendFormat": "{{service}} | Key:{{key}}",
+                "legendFormat": "{{app_name}} | Key:{{key}}",
                 "refId": "A"
              }
           ],
@@ -1225,7 +1225,7 @@
                 "expr": "ws_connection_retries{namespace=\"$namespace\",app_name=~\"$adapter.*\"}",
                 "format": "time_series",
                 "intervalFactor": 2,
-                "legendFormat": "{{service}} | Key:{{key}}",
+                "legendFormat": "{{app_name}} | Key:{{key}}",
                 "refId": "A"
              }
           ],
@@ -1312,7 +1312,7 @@
                 "expr": "ws_subscription_active{namespace=\"$namespace\",app_name=~\"$adapter.*\"}",
                 "format": "time_series",
                 "intervalFactor": 2,
-                "legendFormat": "{{service}} | ConnKey: {{ connection_key }} ConnUrl: {{ connection_url }} Feed: {{feed_id}}",
+                "legendFormat": "{{app_name}} | ConnKey: {{ connection_key }} ConnUrl: {{ connection_url }} Feed: {{feed_id}}",
                 "refId": "A"
              }
           ],
@@ -1399,7 +1399,7 @@
                 "expr": "rate(ws_message_total{namespace=\"$namespace\",app_name=~\"$adapter.*\"}[$__rate_interval])",
                 "format": "time_series",
                 "intervalFactor": 2,
-                "legendFormat": "{{service}} | Feed: {{feed_id}}",
+                "legendFormat": "{{app_name}} | Feed: {{feed_id}}",
                 "refId": "A"
              }
           ],
